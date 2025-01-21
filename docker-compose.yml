@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  app-mbank:
+    build:
+      context: .  # Указываем, где искать Dockerfile
+      dockerfile: Dockerfile # Указываем имя файла Dockerfile
+    image: app-mbank:latest # Задаем имя образа
+    ports:
+      - "9999:9999"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:9999"] # Проверка работоспособности внутри контейнера
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

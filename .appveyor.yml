@@ -1,0 +1,28 @@
+image: Ubuntu2004  # образ для сборки
+
+stack: jdk 11  # версия JDK
+
+branches:
+  only:
+    - main  # ветка git
+
+build: off  # будем использовать свой скрипт сборки
+
+install:
+  - chmod +x gradlew
+
+build_script:
+  # Собираем приложение
+  - ./gradlew build --info
+  - mkdir -p ./artifacts/ # создать папку для артефактов если её нет
+  - cp ./build/libs/app-mbank.jar ./artifacts/app-mbank.jar # Копируем jar в папку артефактов
+  # Запускаем SUT
+  - java -jar ./artifacts/app-mbank.jar &
+  - sleep 10  # Даем SUT время для запуска. (можно использовать wait-for-it).
+
+  # Запускаем автотесты
+  - ./gradlew test --info
+  - cp ./build/reports/tests/test/index.html ./artifacts/test_report.html
+artifacts:
+  paths:
+      - ./artifacts/
